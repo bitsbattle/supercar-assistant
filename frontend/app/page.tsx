@@ -1,6 +1,6 @@
 "use client";
 
-import CarAIAssitantContainer from "@/components/CarAIAssitantContainer";
+import CarAIAssitantContainer from "@/components/CarAIAssistant/CarAIAssitantContainer";
 
 export default function Home() {
   return (

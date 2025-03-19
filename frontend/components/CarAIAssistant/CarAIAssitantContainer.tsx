@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-// import PowerhouseLogo from "../../assets/logo.png";
-import { StreamEventTypes } from '../lib/sseTypes';
-import { WeatherCard } from './CarAIAssistant/ToolOutputs/WeatherCard';
-import ChatInput from "./MessageInput/MessageInput";
-import Image from "next/image";
-import { Header } from './CarAIAssistant/Header';
-import { Footer } from './CarAIAssistant/Footer';
+import { StreamEventTypes } from '../../lib/sseTypes';
+import ChatInput from "../MessageInput/MessageInput";
+import { Header } from './Header';
+import { Footer } from './Footer';
+import { WelcomeMessage } from "./WelcomeMessages";
+import { PromptSuggestions } from "./PromptSuggestions";
+import { MessageBubble } from "./MessageBubble";
+import { Loader } from "./loader";
 
 interface Props {
   isOpen: boolean;
@@ -38,13 +39,9 @@ function CarAIAssitantContainer({ isOpen, onClose, className }: Props) {
   const [inputValue, setInputValue] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [files, setFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [filesUrls, setFilesUrls] = useState<string[]>([]);
-  const [fileUploading, setFileUploading] = useState(false);
   const [isFetchingPrompts, setIsFetchingPrompts] = useState(false);
   const [prompts, setPrompts] = useState<any[]>(prefetchedPrompts);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Session ID management
   const [sessionId, setSessionId] = useState<string>(() => {
@@ -68,19 +65,15 @@ function CarAIAssitantContainer({ isOpen, onClose, className }: Props) {
     scrollToBottom();
   }, [messages]);
 
-
   const handleSendMessage = async (message: string) => {
     const userMessage: Message = { 
       role: 'user', 
       content: message,
-      isSentByGuest: true,
-      attached_files: filesUrls
+      isSentByGuest: true
     };
     
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
-    setFiles([]);
-    setFilesUrls([]);
     setInputValue("");
 
     try {
@@ -125,10 +118,8 @@ function CarAIAssitantContainer({ isOpen, onClose, className }: Props) {
                   const newMessages = [...prev];
                   const lastMessage = newMessages[newMessages.length - 1];
                   if (lastMessage.role === 'assistant' && !lastMessage.tool) {
-                    // Only append non-empty chunks
                     if (rawData.trim()) {
                       lastMessage.content += rawData;
-                      // console.log(lastMessage.content)
                     }
                   }
                   return newMessages;
@@ -158,7 +149,6 @@ function CarAIAssitantContainer({ isOpen, onClose, className }: Props) {
                     output = output.replace(/```/g, '').trim();
                     output = JSON.parse(output);
                   } catch (e) {
-                    // If parsing fails, use the raw output
                     console.log('Using raw tool output');
                   }
                   
@@ -192,12 +182,6 @@ function CarAIAssitantContainer({ isOpen, onClose, className }: Props) {
     }
   };
 
-  
-
-  const getFileName = (url: string) => {
-    return url.split('/').pop();
-  };
-
   return (
     <>
       {isOpen && (
@@ -220,65 +204,20 @@ function CarAIAssitantContainer({ isOpen, onClose, className }: Props) {
           <div className={`flex h-full flex-col ${!messages.length ? "justify-center px-5" : "justify-end overflow-auto pb-0.5"}`}>
             {!messages.length ? (
               <>
-                <div className="text-xl font-bold text-gray-900">
-                  Welcome to SuperCar,
-                  <br />
-                  <span className="bg-[linear-gradient(105.36deg,#101828_0%,#000D36_13.18%,#FF9B05_90.11%)] bg-clip-text text-transparent">
-                    How can we assist you today?
-                  </span>
-                </div>
-                <div className="mt-2 text-xs font-normal text-[#667085]">
-                  I'm Lex, your virtual sales assistant. I can help with test drives, dealership info, and more!
-                </div>
-
-                <div className="mt-4 space-y-3">
-                  {isFetchingPrompts ? (
-                    <div className="space-y-2">
-                      {[...Array(5)].map((_, index) => (
-                        <div key={index} className="w-full h-8 rounded-lg bg-gray-200 animate-pulse mb-2"></div>
-                      ))}
-                    </div>
-                  ) : (
-                    prompts.map((msg, index) => (
-                      <div
-                        key={index}
-                        onClick={() => handleSendMessage(msg)}
-                        className="cursor-pointer rounded-lg border border-[#E3E7EC] px-[10px] py-2 text-xs text-gray-600"
-                      >
-                        {msg}
-                      </div>
-                    ))
-                  )}
-                </div>
+                <WelcomeMessage />
+                <PromptSuggestions 
+                  prompts={prompts} 
+                  isFetchingPrompts={isFetchingPrompts} 
+                  handleSendMessage={handleSendMessage} 
+                />
               </>
             ) : (
-              <div className="mt-4 space-y-3 overflow-auto px-5">
+              <div className="my-3 space-y-3 overflow-auto px-5">
                 {messages.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={`flex ${msg.role === 'user' ? "flex-row-reverse" : "flex-row"}`}
-                  >
-                    <div
-                      className={`max-w-[80%] rounded-xl px-[10px] py-2 text-xs
-                        ${msg.role === 'assistant' 
-                          ? "rounded-bl-md bg-[#F2F2F5] text-[#101828]" 
-                          : "ml-auto rounded-br-md bg-[#ECF5FF] text-black"
-                        }`}
-                    >
-                      {msg.content}
-                      {msg.tool === 'get_weather' && msg.toolOutput && (
-                        <WeatherCard 
-                          city={msg.toolArgs?.city} 
-                          temp={parseInt(msg.toolOutput.match(/\d+/)?.[0] || '0')}
-                        />
-                      )}
-                    </div>
-                  </div>
+                  <MessageBubble key={index} message={msg} />
                 ))}
                 {isLoading && (
-                  <div className="flex w-full items-center justify-center">
-                    {/* <AiLoadingIcon /> */}
-                  </div>
+                  <Loader />
                 )}
                 <div ref={messagesEndRef} />
               </div>
