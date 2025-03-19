@@ -3,9 +3,11 @@
 import React, { useEffect, useRef, useState } from "react";
 // import PowerhouseLogo from "../../assets/logo.png";
 import { StreamEventTypes } from '../lib/sseTypes';
-import { WeatherCard } from './ToolOutputs/WeatherCard';
+import { WeatherCard } from './CarAIAssistant/ToolOutputs/WeatherCard';
 import ChatInput from "./MessageInput/MessageInput";
 import Image from "next/image";
+import { Header } from './CarAIAssistant/Header';
+import { Footer } from './CarAIAssistant/Footer';
 
 interface Props {
   isOpen: boolean;
@@ -25,14 +27,14 @@ interface Message {
 }
 
 const prefetchedPrompts = [
-  "I was injured in a car accident and need legal help.",
-  "I'm dealing with a workplace injury claim.",
-  "I slipped and fell on someone's property what can I do?",
-  "I want to know if I have a strong personal injury case.",
-  "I want to understand my legal rights after an injury."
+  "I'm interested in test driving a SuperCar - how does it work?",
+  "What are the available models at my local dealership?",
+  "Can you check the weather for my test drive appointment?",
+  "What are the financing options for a SuperCar?",
+  "Can you show me the address of the nearest dealership?"
 ];
 
-function SummaryAIAssitantDrawer({ isOpen, onClose, className }: Props) {
+function CarAIAssitantContainer({ isOpen, onClose, className }: Props) {
   const [inputValue, setInputValue] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -216,32 +218,20 @@ function SummaryAIAssitantDrawer({ isOpen, onClose, className }: Props) {
             : "translate(100%, 0)",
         }}
       >
-        <div className="fixed top-0 w-full z-10">
-          <div className="h-1.5 w-full" style={{ background: 'linear-gradient(90.59deg, #00469B 0.51%, #00171F 144.1%)' }} />
-          <div className="flex items-center justify-between bg-[#F2F4F8] p-2">
-            <div className=" inline-flex items-center gap-2">
-              <div className="rounded-lg shadow-md">
-                {/* <BgOrangeSparkles /> */}
-              </div>
-              <span className="text-sm font-semibold !leading-[18px] text-[#060C18]">
-                Ask Summit Legal Group's Intake AI
-              </span>
-            </div>
-          </div>
-        </div>
+        <Header />
         <div className="h-full overflow-y-auto pt-[60px] pb-[160px]">
           <div className={`flex h-full flex-col ${!messages.length ? "justify-center px-5" : "justify-end overflow-auto pb-0.5"}`}>
             {!messages.length ? (
               <>
-                <div className="text-xl font-bold ">
-                  Hi there,
+                <div className="text-xl font-bold text-gray-900">
+                  Welcome to SuperCar,
                   <br />
                   <span className="bg-[linear-gradient(105.36deg,#101828_0%,#000D36_13.18%,#FF9B05_90.11%)] bg-clip-text text-transparent">
                     How can we assist you today?
                   </span>
                 </div>
                 <div className="mt-2 text-xs font-normal text-[#667085]">
-                  Not sure where to start? Just tell us your situation—we'll guide you!
+                  I'm Lex, your virtual sales assistant. I can help with test drives, dealership info, and more!
                 </div>
 
                 <div className="mt-4 space-y-3">
@@ -256,21 +246,12 @@ function SummaryAIAssitantDrawer({ isOpen, onClose, className }: Props) {
                       <div
                         key={index}
                         onClick={() => handleSendMessage(msg)}
-                        className="cursor-pointer rounded-lg border border-[#E3E7EC] px-[10px] py-2 text-xs"
+                        className="cursor-pointer rounded-lg border border-[#E3E7EC] px-[10px] py-2 text-xs text-gray-600"
                       >
                         {msg}
                       </div>
                     ))
                   )}
-                  <button 
-                    className="flex items-center gap-2 cursor-pointer"
-                    onClick={() => setPrompts(prefetchedPrompts)}
-                  >
-                    {/* <RefreshIcon /> */}
-                    <span className="text-xs font-normal text-[#475467]">
-                      Refresh Prompts
-                    </span>
-                  </button>
                 </div>
               </>
             ) : (
@@ -315,17 +296,11 @@ function SummaryAIAssitantDrawer({ isOpen, onClose, className }: Props) {
             width={0}
             handleSubmit={() => handleSendMessage(inputValue)}
           />
-          <div className="h-11 w-full bg-[#F2F4F8] flex items-center justify-center gap-0.5">
-            {/* <Image src={PowerhouseLogo} width={24} height={24} alt="Powerhouse Logo" /> */}
-            <div>
-              <div className="text-[#001D6C] text-[6px] font-light">Powered by</div>
-              <div className="text-[#001D6C] text-[10px] font-bold">Powerhouse</div>
-            </div>
-          </div>
+          <Footer />
         </div>
       </div>
     </>
   );
 }
 
-export default SummaryAIAssitantDrawer; 
+export default CarAIAssitantContainer; 

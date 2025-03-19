@@ -1,11 +1,9 @@
 "use client";
 
-import SummaryAIAssitantDrawer from "@/components/SummaryAIAssitantDrawer";
-
-import Image from "next/image";
+import CarAIAssitantContainer from "@/components/CarAIAssitantContainer";
 
 export default function Home() {
   return (
-    <SummaryAIAssitantDrawer isOpen={true} onClose={() => {}} />
+    <CarAIAssitantContainer isOpen={true} onClose={() => {}} />
   );
 }
