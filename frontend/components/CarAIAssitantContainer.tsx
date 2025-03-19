@@ -68,9 +68,6 @@ function CarAIAssitantContainer({ isOpen, onClose, className }: Props) {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    console.log('Messages updated:', messages);
-  }, [messages]);
 
   const handleSendMessage = async (message: string) => {
     const userMessage: Message = { 
@@ -120,9 +117,8 @@ function CarAIAssitantContainer({ isOpen, onClose, className }: Props) {
         for (const event of events) {
           try {
             const [eventLine, dataLine] = event.split('\n');
-            const eventType = eventLine.replace('event: ', '');
+            const eventType = eventLine.replace('event: ', '')?.trim();
             const rawData = dataLine.replace('data: ', '');
-
             switch(eventType) {
               case StreamEventTypes.CHUNK:
                 setMessages(prev => {
@@ -132,6 +128,7 @@ function CarAIAssitantContainer({ isOpen, onClose, className }: Props) {
                     // Only append non-empty chunks
                     if (rawData.trim()) {
                       lastMessage.content += rawData;
+                      // console.log(lastMessage.content)
                     }
                   }
                   return newMessages;
