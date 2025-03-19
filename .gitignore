@@ -1,4 +1,6 @@
 frontend/.files
+frontend/.next
+frontend/node_modules
 
 __pycache__/
 
