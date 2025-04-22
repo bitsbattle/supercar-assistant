@@ -1,6 +1,6 @@
 # SuperCar Virtual Sales Assistant - Frontend Engineer Test
 
-## Overview
+## Overview 
 
 This repository contains a test for frontend engineers who will be working on AI-related systems. The test focuses on building a chat interface that interacts with an AI agent through a backend API. The AI agent, named Lex, is a virtual sales lead follow-up assistant for SuperCar car dealerships.
 
